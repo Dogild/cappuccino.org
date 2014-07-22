@@ -44,7 +44,7 @@ Cucapp provides a set of environment variables :
 
 The file Cucumber.j and HelperCategories.j (injected in the tested Cappuccino application) are the core of Cucapp. It's in these files (injected in our Cappuccino application when launching the test) where the relation between Cucumber and Cappuccino is made. What do these files do ?
 
-- `HelperCategories.j` contains a category to the class `CPApplication`. The category adds the method `- (CPString)xmlDescription`. This method creates a XML dump which contains a reference of each `CPResponder` currently displayed. In the XML, each CPResponder is associated to a 'xpath'. This unique xpath, which is a string (automatically generated from a CPResponder's title, identifier etc etc...), will be used in your test/features to target a specific CPResponder.
+- `CPApplication+Cucumber.j` contains a category to the class `CPApplication`. The category adds the method `- (CPString)xmlDescription`. This method creates a XML dump which contains a reference of each `CPResponder` currently displayed. In the XML, each CPResponder is associated to a 'xpath'. This unique xpath, which is a string (automatically generated from a CPResponder's title, identifier etc etc...), will be used in your test/features to target a specific CPResponder.
 - The file Cucumber.j contains the class `Cucumber` which constantly listens the URI `/cucumber` on itself.
 - The class `Cucumber` has a set of methods for simulating `CPEvent`.
 - When launching a test, Cucapp will send requests POST on `/cucumber` with some datas. These datas contains informations that the Cappuccino application will interprete. Basically, the datas will be the name of a method (and their params) to call.
@@ -107,7 +107,7 @@ Two categories are used in Cucapp to help you to add new things and to use Cucap
 
 - `CPResponder+CuCapp.j` contains a category to the class CPResponder. The category adds the method `- (void)setCucappIdentifier`. This cucappIdentifier could be used in the creating of xpath. You need to include this category in your Cappuccino application to use this category. With that, you can have xpath as `//CPButton[cucappIdentifier='cucappIdentifier-button-bar-add']`.
 
-- `CucumberCategories.j` will be loaded (not required) by Cucapp when launching Cucumber. This category allows you to add new Cappuccino methods needed for your tests (for instance a method to check the color of a CPView). This file has to be located in `features/support/CucumberCategories.j`.
+- `Cucumber+CuCapp.j` will be loaded (not required) by Cucapp when launching Cucumber. This category allows you to add new Cappuccino methods needed for your tests (for instance a method to check the color of a CPView). This file has to be located in `features/support/Cucumber+CuCapp.j.j`.
 
 ##### Simulate user events
 
