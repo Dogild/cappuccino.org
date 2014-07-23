@@ -75,7 +75,7 @@ And this is it, simple as that ! You just simulated a left click on the button w
 
 ##### What does Cucapp do for you ?
 
-Once you tell Cucumber to simulate an event, Cucapp does the rest for you, it sends a request on `/cucumber` which asks to simulate a left click on a button. Data of the request contains the name of the method (simulateLeftClick) to simulate the click and additional options (the key shift is pressed).
+Once you tell Cucumber to simulate an event, Cucapp does the rest for you, it sends a request on `/cucumber` which asks to simulate a left click on a button. Data of the request contains the name of the method (simulateLeftClick:) to simulate the click and additional options (the key shift is pressed).
 
 This is the final Objective-j method called in our Cappuccino application (this method is injected automatically by Cucapp, it comes from the file `lib/Cucumber.j`) :
 
@@ -104,7 +104,7 @@ Two categories are used in Cucapp to help you to add new things and to use Cucap
 
 - `CPResponder+CuCapp.j` contains a category to the class CPResponder. The category adds the method `-(void)setCucappIdentifier:`. This cucappIdentifier could be used in the creating of xpath. You need to include this category in your Cappuccino application to use this category. With that, you can have xpath as //CPButton[cucappIdentifier='cucappIdentifier-button-bar-add'].
 
-- `Cucumber+Extensions.j` will be loaded (not required) by Cucapp when launching Cucumber. This category allows you to add new Cappuccino methods needed for your tests (for instance a method to check the color of a CPView). This file has to be located in `features/support/Cucumber+CuCapp.j.j`.
+- `Cucumber+Extensions.j` will be loaded (optional) by Cucapp when launching Cucumber. This category allows you to add new Cappuccino methods needed for your tests (for instance a method to check the color of a CPView). This file has to be located in `features/support/Cucumber+CuCapp.j`.
 
 ##### Simulate user events
 
