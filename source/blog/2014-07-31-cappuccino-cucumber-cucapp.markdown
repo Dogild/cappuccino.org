@@ -42,9 +42,9 @@ Cucapp provides a set of environment variables :
 
 ##### Core of Cucapp
 
-The file Cucumber.j and HelperCategories.j (injected in the tested Cappuccino application) are the core of Cucapp. It's in these files (injected in our Cappuccino application when launching the test) thqt the relation between Cucumber and Cappuccino is made. What do these files do ?
+The file Cucumber.j and HelperCategories.j (injected in the tested Cappuccino application) are the core of Cucapp. It's in these files (injected in our Cappuccino application when launching the test) that the relation between Cucumber and Cappuccino is made. What do these files do ?
 
-- `Cappuccino+Cucumber.j` contains a category to the class `CPApplication`. The category adds the method `- (CPString)xmlDescription`. This method creates a XML dump which contains a reference of each `CPResponder` currently displayed. In the XML, each CPResponder is associated to a 'xpath'. This unique xpath, which is a string (automatically generated from a CPResponder's title, identifier etc etc...), will be used in your test/features to target a specific CPResponder.
+- `Cappuccino+Cucumber.j` contains a category to the class `CPApplication`. The category adds the method `-(CPString)xmlDescription`. This method creates a XML dump which contains a reference of each `CPResponder` currently displayed. In the XML, each CPResponder is associated to a `xpath`. This unique xpath, which is a string (automatically generated from a CPResponder's title, identifier etc etc...), will be used in your test/features to target a specific CPResponder.
 - The file Cucumber.j contains the class `Cucumber` which constantly listens the URI `/cucumber` on itself.
 - The class `Cucumber` has a set of methods for simulating `CPEvent`.
 - When launching a test, Cucapp will send requests POST on `/cucumber` with some data. This data contains information that the Cappuccino application will interprete. Basically, this data will be the name of a method (and their params) to call.
@@ -55,18 +55,16 @@ Let's take an example of the simulation of a left click on a button.
 
 Firstly, we create a feature which contains a simple scenario (these are cucumber features, you should take a look [here](https://github.com/cucumber/cucumber/wiki/Feature-Introduction))
 
-```
-Scenario: Open the popover with keypbard event and enter a value
-    Given the user make a left shift click on the add button
-```
+    :::gherkin
+    Scenario: Open the popover with a click on the add button
+        Given the user make a left shift click on the add button
 
 And then, we create our ruby step :
 
-```ruby
-Given /^the user make a left shift click on the add button$/ do
-  app.gui.simulate_left_click         "//CPButton[title='add']", [$CPShiftKeyMask]
-end
-```
+    :::ruby
+    Given /^the user make a left shift click on the add button$/ do
+      app.gui.simulate_left_click         "//CPButton[title='add']", [$CPShiftKeyMask]
+    end
 
 As you can see, the `simulate_left_click` method contains two params :
 
@@ -79,33 +77,32 @@ And this is it, simple as that ! You just simulated a left click on the button w
 
 Once you tell Cucumber to simulate an event, Cucapp does the rest for you, it sends a request on `/cucumber` which asks to simulate a left click on a button. Data of the request contains the name of the method (simulateLeftClick) to simulate the click and additional options (the key shift is pressed).
 
-This is the final `Objective-J` method called in our Cappuccino application (this method is injected automatically by Cucapp, it comes from the file `Cucumber.j`) :
+This is the final Objective-j method called in our Cappuccino application (this method is injected automatically by Cucapp, it comes from the file `lib/Cucumber.j`) :
 
-```obj-j
-- (CPString)simulateLeftClick:(CPArray)params
-{
-    var obj = cucumber_objects[params.shift()],
-        locationWindowPoint;
+    :::objj
+    - (CPString)simulateLeftClick:(CPArray)params
+    {
+        var obj = cucumber_objects[params.shift()],
+            locationWindowPoint;
 
-    if (!obj)
-        return '{"result" : "OBJECT NOT FOUND"}';
+        if (!obj)
+            return '{"result" : "OBJECT NOT FOUND"}';
 
-    if ([obj superview])
-        locationWindowPoint = [[obj superview] convertPointToBase:CGPointMake(CGRectGetMidX([obj frame]), CGRectGetMidY([obj frame]))];
-    else
-        locationWindowPoint = CGPointMake(CGRectGetMidX([obj frame]), CGRectGetMidY([obj frame]));
+        if ([obj superview])
+            locationWindowPoint = [[obj superview] convertPointToBase:CGPointMake(CGRectGetMidX([obj frame]), CGRectGetMidY([obj frame]))];
+        else
+            locationWindowPoint = CGPointMake(CGRectGetMidX([obj frame]), CGRectGetMidY([obj frame]));
 
-    [self _perfomMouseEventOnPoint:locationWindowPoint toPoint:nil window:[obj window] eventType:CPLeftMouseDown numberOfClick:1 modifierFlags:params[0]];
+        [self _perfomMouseEventOnPoint:locationWindowPoint toPoint:nil window:[obj window] eventType:CPLeftMouseDown numberOfClick:1 modifierFlags:params[0]];
 
-    return '{"result" : "OK"}';
-}
-```
+        return '{"result" : "OK"}';
+    }
 
 ##### Helpers
 
 Two categories are used in Cucapp to help you to add new things and to use Cucapp more easily:
 
-- `CPResponder+CuCapp.j` contains a category to the class CPResponder. The category adds the method `- (void)setCucappIdentifier`. This cucappIdentifier could be used in the creating of xpath. You need to include this category in your Cappuccino application to use this category. With that, you can have xpath as `//CPButton[cucappIdentifier='cucappIdentifier-button-bar-add']`.
+- `CPResponder+CuCapp.j` contains a category to the class CPResponder. The category adds the method `-(void)setCucappIdentifier:`. This cucappIdentifier could be used in the creating of xpath. You need to include this category in your Cappuccino application to use this category. With that, you can have xpath as //CPButton[cucappIdentifier='cucappIdentifier-button-bar-add'].
 
 - `Cucumber+Extensions.j` will be loaded (not required) by Cucapp when launching Cucumber. This category allows you to add new Cappuccino methods needed for your tests (for instance a method to check the color of a CPView). This file has to be located in `features/support/Cucumber+CuCapp.j.j`.
 
@@ -113,20 +110,20 @@ Two categories are used in Cucapp to help you to add new things and to use Cucap
 
 Cucapp provides a set of methods to simulate user events, here is what you can simulate from Cucumber:
 
-```ruby
-def simulate_keyboard_event charac, flags
-def simulate_keyboard_events string, flags
-def simulate_left_click xpath, flags
-def simulate_left_click_on_point x, y, flags
-def simulate_double_click xpath, flags
-def simulate_double_click_on_point x, y, flags
-def simulate_dragged_click_view_to_view xpath1, xpath2, flags
-def simulate_dragged_click_view_to_point xpath1, x, y, flags
-def simulate_dragged_click_point_to_point x, y, x2, y2, flags
-def simulate_right_click xpath, flags
-def simulate_right_click_on_point x, y, flags
-def simulate_scroll_wheel xpath, deltaX, deltaY, flags
-```
+    :::ruby
+    def simulate_keyboard_event charac, flags
+    def simulate_keyboard_events string, flags
+    def simulate_left_click xpath, flags
+    def simulate_left_click_on_point x, y, flags
+    def simulate_double_click xpath, flags
+    def simulate_double_click_on_point x, y, flags
+    def simulate_dragged_click_view_to_view xpath1, xpath2, flags
+    def simulate_dragged_click_view_to_point xpath1, x, y, flags
+    def simulate_dragged_click_point_to_point x, y, x2, y2, flags
+    def simulate_right_click xpath, flags
+    def simulate_right_click_on_point x, y, flags
+    def simulate_scroll_wheel xpath, deltaX, deltaY, flags
+
 
 ### Demo
 
