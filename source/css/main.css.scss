@@ -1197,6 +1197,21 @@ h6 a[name] {
   }
 }
 
+.companies {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+    display: block;
+
+    li {
+        display: inline-block;
+
+        figure {
+          margin-bottom: -60px;
+        }
+    }
+}
+
 @import "pygments_style";
 @import "blog";
-
